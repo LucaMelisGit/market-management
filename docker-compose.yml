@@ -1,0 +1,101 @@
+services:
+  market-service:
+    build: ./market-service
+    ports:
+      - "8081:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://market-db:5432/marketdb
+      SPRING_DATASOURCE_USERNAME: marketuser
+      SPRING_DATASOURCE_PASSWORD: marketpass
+    depends_on:
+      - market-db
+    networks:
+      - backend
+
+  product-service:
+    build: ./product-service
+    ports:
+      - "8082:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://product-db:5432/productdb
+      SPRING_DATASOURCE_USERNAME: productuser
+      SPRING_DATASOURCE_PASSWORD: productpass
+    depends_on:
+      - product-db
+    networks:
+      - backend
+
+  user-view-service:
+    build: ./user-view-service
+    ports:
+      - "8083:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://userview-db:5432/userviewdb
+      SPRING_DATASOURCE_USERNAME: userviewuser
+      SPRING_DATASOURCE_PASSWORD: userviewpass
+    depends_on:
+      - userview-db
+    networks:
+      - backend
+
+  frontend-admin:
+    build: ./frontend-admin
+    ports:
+      - "4201:80"
+    networks:
+      - frontend
+
+  frontend-user:
+    build: ./frontend-user
+    ports:
+      - "4200:80"
+    networks:
+      - frontend
+
+  market-db:
+      image: postgres:15
+      environment:
+        POSTGRES_DB: marketdb
+        POSTGRES_USER: marketuser
+        POSTGRES_PASSWORD: marketpass
+      ports:
+        - "5432:5432"
+      volumes:
+        - market_db_data:/var/lib/postgresql/data
+      networks:
+        - backend
+
+  product-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: productdb
+      POSTGRES_USER: productuser
+      POSTGRES_PASSWORD: productpass
+    ports:
+      - "5433:5432"
+    volumes:
+      - product_db_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  userview-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: userviewdb
+      POSTGRES_USER: userviewuser
+      POSTGRES_PASSWORD: userviewpass
+    ports:
+      - "5434:5432"
+    volumes:
+      - userview_db_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+volumes:
+  market_db_data:
+  product_db_data:
+  userview_db_data:
+
+networks:
+  backend:
+  frontend:
